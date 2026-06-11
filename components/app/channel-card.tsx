@@ -49,7 +49,7 @@ export function ChannelCard({
         {/* play overlay */}
         <span className="absolute inset-0 flex items-center justify-center bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100">
           <span className="grid h-12 w-12 place-items-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/40 ring-4 ring-primary/20">
-            <Play className="h-5 w-5 translate-x-0.5 fill-current" />
+            <Play className="h-5 w-5 fill-current" />
           </span>
         </span>
 
