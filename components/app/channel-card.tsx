@@ -21,7 +21,7 @@ export function ChannelCard({
     <div
       className={cn(
         "group relative flex flex-col overflow-hidden rounded-xl border border-white/5 bg-card/80 backdrop-blur-sm",
-        "transition-all duration-300 ease-out hover:z-10 hover:-translate-y-1",
+        "transition-colors duration-300 ease-out",
         "hover:border-primary/40",
         isPlaying && "border-primary/70 ring-2 ring-primary/60",
       )}
