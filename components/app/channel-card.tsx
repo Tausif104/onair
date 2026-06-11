@@ -21,7 +21,7 @@ export function ChannelCard({
     <div
       className={cn(
         "group relative flex flex-col overflow-hidden rounded-xl border border-white/5 bg-card/80 backdrop-blur-sm",
-        "transition-all duration-300 ease-out hover:z-10 hover:-translate-y-1 hover:scale-[1.03]",
+        "transition-all duration-300 ease-out hover:z-10 hover:-translate-y-1",
         "hover:border-primary/40",
         isPlaying && "border-primary/70 ring-2 ring-primary/60",
       )}
@@ -37,7 +37,7 @@ export function ChannelCard({
             src={channel.logo}
             alt=""
             loading="lazy"
-            className="absolute inset-0 h-full w-full object-contain p-4 drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)] transition-transform duration-300 group-hover:scale-110"
+            className="absolute inset-0 h-full w-full object-contain p-4 drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)]"
             onError={(e) => {
               e.currentTarget.style.display = "none";
             }}
