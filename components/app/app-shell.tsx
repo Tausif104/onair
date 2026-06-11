@@ -137,16 +137,16 @@ export function AppShell({
     <div className="flex min-h-dvh flex-col">
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-white/5 bg-background/70 backdrop-blur-xl">
-        <div className="mx-auto flex h-12 w-full max-w-7xl items-center gap-2 px-4 sm:px-6">
+        <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-3 px-4 sm:px-6">
           <button
             onClick={() => setView("home")}
-            className="flex items-center gap-1.5"
+            className="flex items-center gap-2"
             aria-label="Streamly home"
           >
-            <span className="grid h-7 w-7 place-items-center rounded-md bg-primary text-primary-foreground shadow-md shadow-primary/40">
-              <Tv className="h-4 w-4" />
+            <span className="grid h-8 w-8 place-items-center rounded-md bg-primary text-primary-foreground shadow-lg shadow-primary/40">
+              <Tv className="h-5 w-5" />
             </span>
-            <span className="font-display text-xl leading-none tracking-[0.1em] text-primary">
+            <span className="font-display text-2xl leading-none tracking-[0.12em] text-primary">
               STREAMLY
             </span>
           </button>
