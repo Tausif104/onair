@@ -45,6 +45,11 @@ export function ChannelGrid({
     });
   }, [channels, query, group]);
 
+  // Cap rendered cards so huge playlists (10k+) don't tank the DOM.
+  const MAX_VISIBLE = 300;
+  const visible = filtered.slice(0, MAX_VISIBLE);
+  const hidden = filtered.length - visible.length;
+
   if (loading) {
     return (
       <div className="space-y-4">
@@ -96,18 +101,24 @@ export function ChannelGrid({
           <p className="text-sm">{query || group !== ALL ? "No matches." : emptyLabel}</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {filtered.map((c) => (
-            <ChannelCard
-              key={c.streamUrl + c.name}
-              channel={c}
-              isFavorite={favorites.has(c.streamUrl)}
-              isPlaying={nowPlaying === c.streamUrl}
-              onPlay={() => onPlay(c)}
-              onToggleFavorite={() => onToggleFavorite(c)}
-            />
-          ))}
-        </div>
+        <>
+          <p className="text-xs text-muted-foreground">
+            {filtered.length} channel{filtered.length === 1 ? "" : "s"}
+            {hidden > 0 && ` · showing first ${MAX_VISIBLE}, search or pick a category to narrow`}
+          </p>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {visible.map((c, i) => (
+              <ChannelCard
+                key={`${c.streamUrl}-${c.name}-${i}`}
+                channel={c}
+                isFavorite={favorites.has(c.streamUrl)}
+                isPlaying={nowPlaying === c.streamUrl}
+                onPlay={() => onPlay(c)}
+                onToggleFavorite={() => onToggleFavorite(c)}
+              />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
