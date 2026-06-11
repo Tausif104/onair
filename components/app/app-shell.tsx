@@ -137,16 +137,16 @@ export function AppShell({
     <div className="flex min-h-dvh flex-col">
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-white/5 bg-background/70 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-3 px-4 sm:px-6">
+        <div className="mx-auto flex h-12 w-full max-w-7xl items-center gap-2 px-4 sm:px-6">
           <button
             onClick={() => setView("home")}
-            className="flex items-center gap-2"
+            className="flex items-center gap-1.5"
             aria-label="Streamly home"
           >
-            <span className="grid h-8 w-8 place-items-center rounded-md bg-primary text-primary-foreground shadow-lg shadow-primary/40">
-              <Tv className="h-5 w-5" />
+            <span className="grid h-7 w-7 place-items-center rounded-md bg-primary text-primary-foreground shadow-md shadow-primary/40">
+              <Tv className="h-4 w-4" />
             </span>
-            <span className="font-display text-2xl leading-none tracking-[0.12em] text-primary">
+            <span className="font-display text-xl leading-none tracking-[0.1em] text-primary">
               STREAMLY
             </span>
           </button>
@@ -169,8 +169,8 @@ export function AppShell({
             ))}
           </nav>
 
-          <div className="relative ml-auto min-w-0 flex-1 sm:w-60 sm:flex-none md:w-72">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <div className="relative ml-auto min-w-0 flex-1 sm:w-56 sm:flex-none md:w-64">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={query}
               onChange={(e) => {
@@ -180,7 +180,7 @@ export function AppShell({
               placeholder="Search channels…"
               inputMode="search"
               aria-label="Search channels"
-              className="h-10 rounded-full border-white/10 bg-white/5 pl-10"
+              className="h-8 rounded-full border-white/10 bg-white/5 pl-8 text-sm"
             />
           </div>
         </div>
