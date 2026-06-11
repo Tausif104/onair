@@ -36,7 +36,7 @@ export function ChannelCard({
             src={channel.logo}
             alt=""
             loading="lazy"
-            className="h-full w-full object-contain p-3"
+            className="absolute inset-0 h-full w-full object-contain p-3"
             onError={(e) => {
               e.currentTarget.style.display = "none";
             }}
@@ -54,9 +54,10 @@ export function ChannelCard({
           <p className="truncate text-sm font-medium" title={channel.name}>
             {channel.name}
           </p>
-          {channel.group && (
-            <p className="truncate text-xs text-muted-foreground">{channel.group}</p>
-          )}
+          {/* always rendered so every card footer is the same height */}
+          <p className="truncate text-xs text-muted-foreground">
+            {channel.group || " "}
+          </p>
         </div>
         <Button
           size="icon"
