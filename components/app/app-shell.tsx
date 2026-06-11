@@ -169,20 +169,19 @@ export function AppShell({
             ))}
           </nav>
 
-          <div className="relative ml-auto min-w-0 flex-1 sm:w-56 sm:flex-none md:w-64">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={query}
-              onChange={(e) => {
-                setQuery(e.target.value);
-                if (e.target.value && view !== "home") setView("home");
-              }}
-              placeholder="Search channels…"
-              inputMode="search"
-              aria-label="Search channels"
-              className="h-8 rounded-full border-white/10 bg-white/5 pl-8 text-sm"
-            />
-          </div>
+          {view === "home" && (
+            <div className="relative ml-auto min-w-0 flex-1 sm:w-56 sm:flex-none md:w-64">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search channels…"
+                inputMode="search"
+                aria-label="Search channels"
+                className="h-8 rounded-full border-white/10 bg-white/5 pl-8 text-sm"
+              />
+            </div>
+          )}
         </div>
       </header>
 
