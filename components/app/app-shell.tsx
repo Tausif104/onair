@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition, useCallback } from "react";
+import { useEffect, useMemo, useState, useTransition, useCallback } from "react";
 import { toast } from "sonner";
 import {
   Home,
@@ -11,6 +11,8 @@ import {
   History,
   Trash2,
   RotateCw,
+  Trophy,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -22,13 +24,24 @@ import { fetchDefaultChannels } from "@/app/actions/playlist";
 import { toggleFavorite, recordWatch, clearHistory } from "@/app/actions/library";
 import { logout } from "@/app/actions/auth";
 
-type View = "home" | "favorites" | "settings";
+type View = "home" | "worldcup" | "favorites" | "settings";
 
 const NAV: { view: View; label: string; icon: typeof Home }[] = [
   { view: "home", label: "Home", icon: Home },
+  { view: "worldcup", label: "World Cup", icon: Trophy },
   { view: "favorites", label: "Favorites", icon: Heart },
   { view: "settings", label: "Settings", icon: Settings },
 ];
+
+// Heuristic: surface sports channels already present in the user's source.
+// We do NOT host, curate, or hardcode any World Cup stream (PLAN §2) — this only
+// filters the channels the source already provides by name/group.
+const SPORTS_RE =
+  /\b(sports?|football|soccer|fifa|world\s?cup|bein|supersport|ssc|sky\s?sports|espn|fox\s?sports|star\s?sports|t\s?sports|ten\s?sports|dazn|optus\s?sport|tnt\s?sports|astro\s?supersport|elta|premier\s?sports|setanta|match!?)\b/i;
+
+function isSportsChannel(c: Channel): boolean {
+  return SPORTS_RE.test(c.name) || (c.group ? SPORTS_RE.test(c.group) : false);
+}
 
 export function AppShell({
   user,
@@ -51,6 +64,8 @@ export function AppShell({
   );
   const [history, setHistory] = useState<Channel[]>(initialHistory);
   const [, startTransition] = useTransition();
+
+  const sportsChannels = useMemo(() => channels.filter(isSportsChannel), [channels]);
 
   const loadChannels = useCallback(async () => {
     setLoadingChannels(true);
@@ -175,6 +190,57 @@ export function AppShell({
           </section>
         )}
 
+        {view === "worldcup" && (
+          <section className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Trophy className="h-5 w-5 text-primary" />
+              <h1 className="text-lg font-semibold">World Cup &amp; Sports</h1>
+            </div>
+
+            {/* Official rights-holder guidance — premium events should be watched
+                through licensed sources, not restreams (PLAN §2). */}
+            <div className="space-y-2 rounded-xl border bg-muted/40 p-4 text-sm">
+              <p className="font-medium">Watch the World Cup officially</p>
+              <p className="text-muted-foreground">
+                The FIFA World Cup is licensed. For a reliable, legal stream use the
+                official rights holder for your region.
+              </p>
+              <div className="flex flex-wrap gap-2 pt-1">
+                <a
+                  href="https://www.plus.fifa.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-md border bg-background px-3 py-1.5 font-medium hover:bg-accent"
+                >
+                  FIFA+ <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+                <a
+                  href="https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-md border bg-background px-3 py-1.5 font-medium hover:bg-accent"
+                >
+                  Official site <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              </div>
+              <p className="pt-1 text-xs text-muted-foreground">
+                Below are sports channels detected in your loaded source. Availability
+                and legality depend on that source — we don’t host or curate streams.
+              </p>
+            </div>
+
+            <ChannelGrid
+              channels={sportsChannels}
+              loading={loadingChannels}
+              favorites={favSet}
+              nowPlaying={nowPlaying?.streamUrl ?? null}
+              onPlay={play}
+              onToggleFavorite={onToggleFavorite}
+              emptyLabel="No sports channels found in your source."
+            />
+          </section>
+        )}
+
         {view === "favorites" && (
           <section className="space-y-4">
             <h1 className="text-lg font-semibold">Favorites</h1>
@@ -249,7 +315,7 @@ export function AppShell({
 
       {/* Mobile bottom nav */}
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t bg-background/95 backdrop-blur md:hidden">
-        <div className="mx-auto grid max-w-md grid-cols-3">
+        <div className="mx-auto grid max-w-md grid-cols-4">
           {NAV.map(({ view: v, label, icon: Icon }) => (
             <button
               key={v}
