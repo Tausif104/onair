@@ -1,0 +1,24 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - img [ref=e6]
+          - generic [ref=e9]: Streamly
+        - navigation [ref=e10]:
+          - button "Home" [ref=e11]:
+            - img
+            - text: Home
+          - button "Favorites" [ref=e12]:
+            - img
+            - text: Favorites
+          - button "Settings" [ref=e13]:
+            - img
+            - text: Settings
+        - button "Toggle theme" [ref=e15]:
+          - img
+    - main [ref=e16]
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e34] [cursor=pointer]:
+    - img [ref=e35]
+  - alert [ref=e38]

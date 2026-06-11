@@ -8,15 +8,10 @@ export default async function HomePage() {
   const userId = await getUserId();
   if (!userId) redirect("/login");
 
-  const [user, playlists, favorites, history] = await Promise.all([
+  const [user, favorites, history] = await Promise.all([
     prisma.user.findUniqueOrThrow({
       where: { id: userId },
       select: { email: true, name: true },
-    }),
-    prisma.playlist.findMany({
-      where: { userId },
-      orderBy: { createdAt: "asc" },
-      select: { id: true, name: true, url: true },
     }),
     prisma.favorite.findMany({
       where: { userId },
@@ -47,7 +42,6 @@ export default async function HomePage() {
   return (
     <AppShell
       user={user}
-      initialPlaylists={playlists}
       initialFavorites={favChannels}
       initialHistory={historyChannels}
     />

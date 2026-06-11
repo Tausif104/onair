@@ -5,63 +5,45 @@ import { toast } from "sonner";
 import {
   Home,
   Heart,
-  ListVideo,
   Settings,
   Tv,
   LogOut,
   History,
   Trash2,
+  RotateCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/app/theme-toggle";
 import { Player } from "@/components/app/player";
 import { ChannelGrid } from "@/components/app/channel-grid";
-import { PlaylistManager } from "@/components/app/playlist-manager";
 import type { Channel } from "@/lib/m3u";
-import type { PlaylistRecord } from "@/app/actions/playlist";
-import { fetchPlaylistChannels, removePlaylist } from "@/app/actions/playlist";
+import { fetchDefaultChannels } from "@/app/actions/playlist";
 import { toggleFavorite, recordWatch, clearHistory } from "@/app/actions/library";
 import { logout } from "@/app/actions/auth";
 
-type View = "home" | "favorites" | "playlists" | "settings";
+type View = "home" | "favorites" | "settings";
 
 const NAV: { view: View; label: string; icon: typeof Home }[] = [
   { view: "home", label: "Home", icon: Home },
   { view: "favorites", label: "Favorites", icon: Heart },
-  { view: "playlists", label: "Playlists", icon: ListVideo },
   { view: "settings", label: "Settings", icon: Settings },
 ];
 
 export function AppShell({
   user,
-  initialPlaylists,
   initialFavorites,
   initialHistory,
 }: {
   user: { email: string; name: string | null };
-  initialPlaylists: PlaylistRecord[];
   initialFavorites: Channel[];
   initialHistory: Channel[];
 }) {
   const [view, setView] = useState<View>("home");
-  const [playlists, setPlaylists] = useState<PlaylistRecord[]>(initialPlaylists);
-  const [activeId, setActiveId] = useState<string | null>(
-    initialPlaylists[0]?.id ?? null,
-  );
   const [channels, setChannels] = useState<Channel[]>([]);
-  const [loadingChannels, setLoadingChannels] = useState(false);
+  const [loadingChannels, setLoadingChannels] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [nowPlaying, setNowPlaying] = useState<Channel | null>(null);
-  const [sheetOpen, setSheetOpen] = useState(false);
 
   const [favorites, setFavorites] = useState<Channel[]>(initialFavorites);
   const [favSet, setFavSet] = useState<Set<string>>(
@@ -70,13 +52,12 @@ export function AppShell({
   const [history, setHistory] = useState<Channel[]>(initialHistory);
   const [, startTransition] = useTransition();
 
-  const loadPlaylist = useCallback(async (id: string) => {
-    setActiveId(id);
+  const loadChannels = useCallback(async () => {
     setLoadingChannels(true);
-    setChannels([]);
-    const res = await fetchPlaylistChannels(id);
+    setLoadError(null);
+    const res = await fetchDefaultChannels();
     if (res.error) {
-      toast.error(res.error);
+      setLoadError(res.error);
       setChannels([]);
     } else {
       setChannels(res.channels ?? []);
@@ -84,20 +65,17 @@ export function AppShell({
     setLoadingChannels(false);
   }, []);
 
-  // Auto-load the first playlist on mount.
   useEffect(() => {
-    if (activeId) loadPlaylist(activeId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    loadChannels();
+  }, [loadChannels]);
 
   const play = useCallback((c: Channel) => {
     setNowPlaying(c);
     setView("home");
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
-    setHistory((prev) => [
-      c,
-      ...prev.filter((h) => h.streamUrl !== c.streamUrl),
-    ].slice(0, 50));
+    setHistory((prev) =>
+      [c, ...prev.filter((h) => h.streamUrl !== c.streamUrl)].slice(0, 50),
+    );
     startTransition(() => {
       recordWatch({ name: c.name, streamUrl: c.streamUrl, logo: c.logo });
     });
@@ -106,7 +84,6 @@ export function AppShell({
   const onToggleFavorite = useCallback(
     (c: Channel) => {
       const wasFav = favSet.has(c.streamUrl);
-      // optimistic
       setFavSet((prev) => {
         const next = new Set(prev);
         if (wasFav) next.delete(c.streamUrl);
@@ -129,45 +106,6 @@ export function AppShell({
     [favSet],
   );
 
-  const onAddPlaylist = useCallback(
-    (p: PlaylistRecord) => {
-      setPlaylists((prev) => [...prev, p]);
-      setSheetOpen(false);
-      loadPlaylist(p.id);
-      setView("home");
-    },
-    [loadPlaylist],
-  );
-
-  const onRemovePlaylist = useCallback(
-    (id: string) => {
-      setPlaylists((prev) => prev.filter((p) => p.id !== id));
-      if (activeId === id) {
-        setActiveId(null);
-        setChannels([]);
-      }
-      startTransition(() => {
-        removePlaylist(id);
-      });
-      toast.success("Playlist removed");
-    },
-    [activeId],
-  );
-
-  const manager = (
-    <PlaylistManager
-      playlists={playlists}
-      activeId={activeId}
-      onAdded={onAddPlaylist}
-      onRemove={onRemovePlaylist}
-      onSelect={(id) => {
-        loadPlaylist(id);
-        setSheetOpen(false);
-        setView("home");
-      }}
-    />
-  );
-
   return (
     <div className="flex min-h-dvh flex-col">
       {/* Header */}
@@ -178,7 +116,6 @@ export function AppShell({
             <span>Streamly</span>
           </div>
 
-          {/* Desktop nav */}
           <nav className="ml-6 hidden items-center gap-1 md:flex">
             {NAV.map(({ view: v, label, icon: Icon }) => (
               <Button
@@ -194,24 +131,6 @@ export function AppShell({
           </nav>
 
           <div className="ml-auto flex items-center gap-1">
-            {/* Sources sheet (quick add/switch) */}
-            <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-              <SheetTrigger render={<Button variant="ghost" size="sm" />}>
-                <ListVideo className="h-4 w-4" />
-                <span className="hidden sm:inline">Sources</span>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-full max-w-md">
-                <SheetHeader>
-                  <SheetTitle>Playlists</SheetTitle>
-                  <SheetDescription>
-                    Add your own M3U sources. We never host or bundle streams.
-                  </SheetDescription>
-                </SheetHeader>
-                <ScrollArea className="h-[calc(100dvh-7rem)] px-4 pb-6">
-                  {manager}
-                </ScrollArea>
-              </SheetContent>
-            </Sheet>
             <ThemeToggle />
           </div>
         </div>
@@ -231,16 +150,17 @@ export function AppShell({
 
         {view === "home" && (
           <section className="space-y-4">
-            {playlists.length === 0 ? (
-              <EmptyState
-                title="Add a playlist to start"
-                body="This app is the player — you bring the content. Paste your own M3U URL."
-                action={
-                  <Button onClick={() => setSheetOpen(true)}>
-                    <ListVideo className="h-4 w-4" /> Add playlist
-                  </Button>
-                }
-              />
+            {loadError ? (
+              <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed py-16 text-center">
+                <Tv className="h-12 w-12 text-muted-foreground" />
+                <div className="space-y-1">
+                  <p className="font-medium">Couldn’t load channels</p>
+                  <p className="text-sm text-muted-foreground">{loadError}</p>
+                </div>
+                <Button onClick={loadChannels}>
+                  <RotateCw className="h-4 w-4" /> Retry
+                </Button>
+              </div>
             ) : (
               <ChannelGrid
                 channels={channels}
@@ -249,7 +169,7 @@ export function AppShell({
                 nowPlaying={nowPlaying?.streamUrl ?? null}
                 onPlay={play}
                 onToggleFavorite={onToggleFavorite}
-                emptyLabel="This playlist has no channels."
+                emptyLabel="No channels available."
               />
             )}
           </section>
@@ -266,13 +186,6 @@ export function AppShell({
               onToggleFavorite={onToggleFavorite}
               emptyLabel="No favorites yet. Tap the heart on a channel."
             />
-          </section>
-        )}
-
-        {view === "playlists" && (
-          <section className="max-w-xl space-y-4">
-            <h1 className="text-lg font-semibold">Playlists</h1>
-            {manager}
           </section>
         )}
 
@@ -336,7 +249,7 @@ export function AppShell({
 
       {/* Mobile bottom nav */}
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t bg-background/95 backdrop-blur md:hidden">
-        <div className="mx-auto grid max-w-md grid-cols-4">
+        <div className="mx-auto grid max-w-md grid-cols-3">
           {NAV.map(({ view: v, label, icon: Icon }) => (
             <button
               key={v}
@@ -352,27 +265,6 @@ export function AppShell({
           ))}
         </div>
       </nav>
-    </div>
-  );
-}
-
-function EmptyState({
-  title,
-  body,
-  action,
-}: {
-  title: string;
-  body: string;
-  action?: React.ReactNode;
-}) {
-  return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed py-16 text-center">
-      <Tv className="h-12 w-12 text-muted-foreground" />
-      <div className="space-y-1">
-        <p className="font-medium">{title}</p>
-        <p className="mx-auto max-w-xs text-sm text-muted-foreground">{body}</p>
-      </div>
-      {action}
     </div>
   );
 }
