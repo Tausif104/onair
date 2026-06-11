@@ -42,8 +42,16 @@ const NAV: { view: View; label: string; icon: typeof Home }[] = [
 const SPORTS_RE =
   /\b(sports?|football|soccer|fifa|world\s?cup|bein|supersport|ssc|sky\s?sports|espn|fox\s?sports|star\s?sports|t\s?sports|ten\s?sports|dazn|optus\s?sport|tnt\s?sports|astro\s?supersport|elta|premier\s?sports|setanta|match!?)\b/i;
 
+// Extra Bangladeshi channels to surface in the World Cup tab (matched by name from
+// the loaded source — no stream URLs are hardcoded; Gazi/GTV is licensed, PLAN §2).
+const EXTRA_WC_RE = /\b(somoy|gazi\s?tv|gtv|btv|bangladesh\s?television)\b/i;
+
 function isSportsChannel(c: Channel): boolean {
-  return SPORTS_RE.test(c.name) || (c.group ? SPORTS_RE.test(c.group) : false);
+  return (
+    SPORTS_RE.test(c.name) ||
+    EXTRA_WC_RE.test(c.name) ||
+    (c.group ? SPORTS_RE.test(c.group) : false)
+  );
 }
 
 export function AppShell({

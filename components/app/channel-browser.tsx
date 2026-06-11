@@ -64,6 +64,8 @@ export function ChannelBrowser({
 
   const featured = useMemo(
     () =>
+      // prefer Somoy TV when the source carries it, else first logo'd channel
+      channels.find((c) => /somoy/i.test(c.name)) ??
       channels.find((c) => c.logo && c.group && !/^undefined$/i.test(c.group)) ??
       channels.find((c) => c.logo) ??
       channels[0] ??
