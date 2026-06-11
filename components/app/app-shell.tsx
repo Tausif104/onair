@@ -169,7 +169,7 @@ export function AppShell({
             ))}
           </nav>
 
-          <div className="relative ml-auto w-40 sm:w-60 md:w-72">
+          <div className="relative ml-auto min-w-0 flex-1 sm:w-60 sm:flex-none md:w-72">
             <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={query}
