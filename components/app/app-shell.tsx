@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/app/theme-toggle";
 import { Player } from "@/components/app/player";
 import { ChannelGrid } from "@/components/app/channel-grid";
+import { ChannelBrowser } from "@/components/app/channel-browser";
 import type { Channel } from "@/lib/m3u";
 import { fetchDefaultChannels } from "@/app/actions/playlist";
 import { toggleFavorite, recordWatch, clearHistory } from "@/app/actions/library";
@@ -124,24 +125,36 @@ export function AppShell({
   return (
     <div className="flex min-h-dvh flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-30 border-b bg-background/90 backdrop-blur">
-        <div className="mx-auto flex h-14 w-full max-w-6xl items-center gap-2 px-4">
-          <div className="flex items-center gap-2 font-semibold">
-            <Tv className="h-5 w-5 text-primary" />
-            <span>Streamly</span>
-          </div>
+      <header className="sticky top-0 z-40 border-b border-white/5 bg-background/70 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-3 px-4 sm:px-6">
+          <button
+            onClick={() => setView("home")}
+            className="flex items-center gap-2"
+            aria-label="Streamly home"
+          >
+            <span className="grid h-8 w-8 place-items-center rounded-md bg-primary text-primary-foreground shadow-lg shadow-primary/40">
+              <Tv className="h-5 w-5" />
+            </span>
+            <span className="font-display text-2xl leading-none tracking-[0.12em] text-primary">
+              STREAMLY
+            </span>
+          </button>
 
-          <nav className="ml-6 hidden items-center gap-1 md:flex">
+          <nav className="ml-4 hidden items-center gap-1 md:flex">
             {NAV.map(({ view: v, label, icon: Icon }) => (
-              <Button
+              <button
                 key={v}
-                variant={view === v ? "secondary" : "ghost"}
-                size="sm"
                 onClick={() => setView(v)}
+                className={cn(
+                  "flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
+                  view === v
+                    ? "bg-white/10 text-foreground"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
               >
                 <Icon className="h-4 w-4" />
                 {label}
-              </Button>
+              </button>
             ))}
           </nav>
 
@@ -152,9 +165,9 @@ export function AppShell({
       </header>
 
       {/* Main */}
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 pb-24 pt-4 md:pb-8">
+      <main className="mx-auto w-full max-w-7xl flex-1 px-4 pb-28 pt-5 sm:px-6 md:pb-10">
         {nowPlaying && view === "home" && (
-          <div className="mb-4">
+          <div className="mb-6 overflow-hidden rounded-2xl shadow-2xl shadow-black/40 ring-1 ring-white/10 animate-rise">
             <Player
               src={nowPlaying.streamUrl}
               title={nowPlaying.name}
@@ -164,9 +177,9 @@ export function AppShell({
         )}
 
         {view === "home" && (
-          <section className="space-y-4">
+          <section>
             {loadError ? (
-              <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed py-16 text-center">
+              <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed py-20 text-center">
                 <Tv className="h-12 w-12 text-muted-foreground" />
                 <div className="space-y-1">
                   <p className="font-medium">Couldn’t load channels</p>
@@ -177,40 +190,42 @@ export function AppShell({
                 </Button>
               </div>
             ) : (
-              <ChannelGrid
+              <ChannelBrowser
                 channels={channels}
                 loading={loadingChannels}
                 favorites={favSet}
                 nowPlaying={nowPlaying?.streamUrl ?? null}
                 onPlay={play}
                 onToggleFavorite={onToggleFavorite}
-                emptyLabel="No channels available."
               />
             )}
           </section>
         )}
 
         {view === "worldcup" && (
-          <section className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Trophy className="h-5 w-5 text-primary" />
-              <h1 className="text-lg font-semibold">World Cup &amp; Sports</h1>
+          <section className="space-y-5">
+            <div className="flex items-center gap-2.5">
+              <Trophy className="h-7 w-7 text-primary" />
+              <h1 className="font-display text-3xl tracking-wide sm:text-4xl">
+                World Cup &amp; Sports
+              </h1>
             </div>
 
             {/* Official rights-holder guidance — premium events should be watched
                 through licensed sources, not restreams (PLAN §2). */}
-            <div className="space-y-2 rounded-xl border bg-muted/40 p-4 text-sm">
-              <p className="font-medium">Watch the World Cup officially</p>
-              <p className="text-muted-foreground">
+            <div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/15 via-card to-card p-5 text-sm">
+              <Trophy className="pointer-events-none absolute -right-6 -top-6 h-32 w-32 text-primary/10" />
+              <p className="text-base font-semibold">Watch the World Cup officially</p>
+              <p className="mt-1 max-w-2xl text-muted-foreground">
                 The FIFA World Cup is licensed. For a reliable, legal stream use the
                 official rights holder for your region.
               </p>
-              <div className="flex flex-wrap gap-2 pt-1">
+              <div className="mt-3 flex flex-wrap gap-2">
                 <a
                   href="https://www.plus.fifa.com/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-md border bg-background px-3 py-1.5 font-medium hover:bg-accent"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 font-semibold text-primary-foreground shadow-md shadow-primary/30 transition hover:brightness-110"
                 >
                   FIFA+ <ExternalLink className="h-3.5 w-3.5" />
                 </a>
@@ -218,12 +233,12 @@ export function AppShell({
                   href="https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-md border bg-background px-3 py-1.5 font-medium hover:bg-accent"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-4 py-2 font-medium hover:bg-white/10"
                 >
                   Official site <ExternalLink className="h-3.5 w-3.5" />
                 </a>
               </div>
-              <p className="pt-1 text-xs text-muted-foreground">
+              <p className="mt-3 text-xs text-muted-foreground">
                 Below are sports channels detected in your loaded source. Availability
                 and legality depend on that source — we don’t host or curate streams.
               </p>
@@ -242,8 +257,11 @@ export function AppShell({
         )}
 
         {view === "favorites" && (
-          <section className="space-y-4">
-            <h1 className="text-lg font-semibold">Favorites</h1>
+          <section className="space-y-5">
+            <div className="flex items-center gap-2.5">
+              <Heart className="h-7 w-7 text-primary" />
+              <h1 className="font-display text-3xl tracking-wide sm:text-4xl">Favorites</h1>
+            </div>
             <ChannelGrid
               channels={favorites}
               favorites={favSet}
@@ -257,9 +275,12 @@ export function AppShell({
 
         {view === "settings" && (
           <section className="max-w-xl space-y-6">
-            <h1 className="text-lg font-semibold">Settings</h1>
+            <div className="flex items-center gap-2.5">
+              <Settings className="h-7 w-7 text-primary" />
+              <h1 className="font-display text-3xl tracking-wide sm:text-4xl">Settings</h1>
+            </div>
 
-            <div className="rounded-lg border p-4">
+            <div className="rounded-xl border border-white/10 bg-card/60 p-4">
               <p className="text-sm font-medium">Signed in as</p>
               <p className="text-sm text-muted-foreground">
                 {user.name ? `${user.name} · ` : ""}
@@ -267,7 +288,7 @@ export function AppShell({
               </p>
             </div>
 
-            <div className="rounded-lg border">
+            <div className="rounded-xl border border-white/10 bg-card/60">
               <div className="flex items-center justify-between p-4">
                 <div className="flex items-center gap-2">
                   <History className="h-4 w-4 text-muted-foreground" />
@@ -314,21 +335,27 @@ export function AppShell({
       </main>
 
       {/* Mobile bottom nav */}
-      <nav className="fixed inset-x-0 bottom-0 z-30 border-t bg-background/95 backdrop-blur md:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-background/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden">
         <div className="mx-auto grid max-w-md grid-cols-4">
-          {NAV.map(({ view: v, label, icon: Icon }) => (
-            <button
-              key={v}
-              onClick={() => setView(v)}
-              className={cn(
-                "flex min-h-[3.5rem] flex-col items-center justify-center gap-0.5 text-xs",
-                view === v ? "text-primary" : "text-muted-foreground",
-              )}
-            >
-              <Icon className={cn("h-5 w-5", view === v && "fill-primary/10")} />
-              {label}
-            </button>
-          ))}
+          {NAV.map(({ view: v, label, icon: Icon }) => {
+            const active = view === v;
+            return (
+              <button
+                key={v}
+                onClick={() => setView(v)}
+                className={cn(
+                  "relative flex min-h-[3.75rem] flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors",
+                  active ? "text-primary" : "text-muted-foreground",
+                )}
+              >
+                {active && (
+                  <span className="absolute top-0 h-0.5 w-8 rounded-full bg-primary shadow-[0_0_12px] shadow-primary" />
+                )}
+                <Icon className={cn("h-5 w-5", active && "fill-primary/15")} />
+                {label}
+              </button>
+            );
+          })}
         </div>
       </nav>
     </div>

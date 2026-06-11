@@ -27,11 +27,15 @@ export function AuthForm() {
   );
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-sm border-white/10 bg-card/70 shadow-2xl shadow-black/40 backdrop-blur-xl">
       <CardHeader className="text-center">
-        <div className="mx-auto mb-1 flex items-center gap-2 text-lg font-semibold">
-          <Tv className="h-6 w-6 text-primary" />
-          Streamly
+        <div className="mx-auto mb-1 flex items-center gap-2">
+          <span className="grid h-8 w-8 place-items-center rounded-md bg-primary text-primary-foreground shadow-lg shadow-primary/40">
+            <Tv className="h-5 w-5" />
+          </span>
+          <span className="font-display text-2xl tracking-[0.12em] text-primary">
+            STREAMLY
+          </span>
         </div>
         <CardTitle className="text-base font-normal text-muted-foreground">
           Your playlists. Your streams. In the browser.

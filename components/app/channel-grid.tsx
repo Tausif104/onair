@@ -54,8 +54,8 @@ export function ChannelGrid({
     return (
       <div className="space-y-4">
         <Skeleton className="h-10 w-full" />
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {Array.from({ length: 8 }).map((_, i) => (
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          {Array.from({ length: 10 }).map((_, i) => (
             <Skeleton key={i} className="aspect-[4/3] w-full rounded-xl" />
           ))}
         </div>
@@ -65,28 +65,28 @@ export function ChannelGrid({
 
   return (
     <div className="space-y-3">
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+      <div className="relative max-w-xl">
+        <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search channels…"
-          className="pl-9"
+          className="h-11 rounded-full border-white/10 bg-white/5 pl-11 text-base"
           inputMode="search"
         />
       </div>
 
       {groups.length > 1 && (
-        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
           {groups.map((g) => (
             <button
               key={g}
               onClick={() => setGroup(g)}
               className={cn(
-                "shrink-0 rounded-full border px-3 py-1.5 text-sm transition-colors",
+                "shrink-0 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-all",
                 group === g
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "bg-background hover:bg-accent",
+                  ? "border-primary bg-primary text-primary-foreground shadow-md shadow-primary/30"
+                  : "border-white/10 bg-white/5 text-muted-foreground hover:border-white/25 hover:text-foreground",
               )}
             >
               {g}
@@ -106,7 +106,7 @@ export function ChannelGrid({
             {filtered.length} channel{filtered.length === 1 ? "" : "s"}
             {hidden > 0 && ` · showing first ${MAX_VISIBLE}, search or pick a category to narrow`}
           </p>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {visible.map((c, i) => (
               <ChannelCard
                 key={`${c.streamUrl}-${c.name}-${i}`}
