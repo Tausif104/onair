@@ -1,8 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Search, Tv } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Tv } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { ChannelCard } from "@/components/app/channel-card";
@@ -20,6 +19,7 @@ export function ChannelBrowser({
   loading,
   favorites,
   nowPlaying,
+  query,
   onPlay,
   onToggleFavorite,
 }: {
@@ -27,10 +27,10 @@ export function ChannelBrowser({
   loading?: boolean;
   favorites: Set<string>;
   nowPlaying: string | null;
+  query: string;
   onPlay: (c: Channel) => void;
   onToggleFavorite: (c: Channel) => void;
 }) {
-  const [query, setQuery] = useState("");
   const [group, setGroup] = useState(ALL);
 
   // groups sorted by channel count (busiest countries first)
@@ -88,19 +88,8 @@ export function ChannelBrowser({
 
   return (
     <div className="space-y-6">
-      {/* controls */}
-      <div className="space-y-3">
-        <div className="relative max-w-xl">
-          <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search 12,000+ channels…"
-            inputMode="search"
-            className="h-11 rounded-full border-white/10 bg-white/5 pl-11 text-base"
-          />
-        </div>
-
+      {/* category chips (search lives in the header) */}
+      <div>
         <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
           {groups.slice(0, 60).map((g) => (
             <button

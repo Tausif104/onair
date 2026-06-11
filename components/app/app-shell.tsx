@@ -14,8 +14,10 @@ import {
   Trophy,
   ExternalLink,
   X,
+  Search,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Player } from "@/components/app/player";
 import { ChannelGrid } from "@/components/app/channel-grid";
@@ -54,6 +56,7 @@ export function AppShell({
   initialHistory: Channel[];
 }) {
   const [view, setView] = useState<View>("home");
+  const [query, setQuery] = useState("");
   const [channels, setChannels] = useState<Channel[]>([]);
   const [loadingChannels, setLoadingChannels] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -158,6 +161,20 @@ export function AppShell({
             ))}
           </nav>
 
+          <div className="relative ml-auto w-40 sm:w-60 md:w-72">
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                if (e.target.value && view !== "home") setView("home");
+              }}
+              placeholder="Search channels…"
+              inputMode="search"
+              aria-label="Search channels"
+              className="h-10 rounded-full border-white/10 bg-white/5 pl-10"
+            />
+          </div>
         </div>
       </header>
 
@@ -199,6 +216,7 @@ export function AppShell({
                 loading={loadingChannels}
                 favorites={favSet}
                 nowPlaying={nowPlaying?.streamUrl ?? null}
+                query={query}
                 onPlay={play}
                 onToggleFavorite={onToggleFavorite}
               />
