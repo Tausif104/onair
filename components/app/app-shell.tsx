@@ -141,13 +141,13 @@ export function AppShell({
           <button
             onClick={() => setView("home")}
             className="flex items-center gap-2"
-            aria-label="Streamly home"
+            aria-label="OnAir home"
           >
             <span className="grid h-8 w-8 place-items-center rounded-md bg-primary text-primary-foreground shadow-lg shadow-primary/40">
               <Tv className="h-5 w-5" />
             </span>
             <span className="font-display text-2xl leading-none tracking-[0.12em] text-primary">
-              STREAMLY
+              ONAIR
             </span>
           </button>
 

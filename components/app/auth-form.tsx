@@ -33,7 +33,7 @@ export function AuthForm() {
             <Tv className="h-5 w-5" />
           </span>
           <span className="font-display text-2xl tracking-[0.12em] text-primary">
-            STREAMLY
+            ONAIR
           </span>
         </div>
         <CardTitle className="text-base font-normal text-muted-foreground">

@@ -22,7 +22,7 @@ const bebas = Bebas_Neue({
 });
 
 export const metadata: Metadata = {
-  title: "Streamly — IPTV Player",
+  title: "OnAir — IPTV Player",
   description: "Add your own M3U playlists and watch streams in the browser.",
 };
 
