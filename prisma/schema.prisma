@@ -1,0 +1,70 @@
+// Prisma 7 (Rust-free) — uses a driver adapter at runtime (see lib/prisma.ts).
+// Local dev: SQLite. Swap datasource provider to "postgresql" + the pg adapter for prod.
+generator client {
+  // prisma-client-js kept deliberately: the new "prisma-client" provider can break
+  // Next 16 Turbopack module resolution (PLAN §9). This emits to node_modules/@prisma/client.
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  // Prisma 7: connection URL lives in prisma.config.ts, not here.
+  provider = "sqlite"
+}
+
+model User {
+  id           String         @id @default(cuid())
+  email        String         @unique
+  name         String?
+  passwordHash String
+  playlists    Playlist[]
+  favorites    Favorite[]
+  history      WatchHistory[]
+  sessions     Session[]
+  createdAt    DateTime       @default(now())
+}
+
+// JWT carries this row's id (sid); verified each request so sessions can be revoked.
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Playlist {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  url       String // user-supplied M3U source
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Favorite {
+  id        String  @id @default(cuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  logo      String?
+  group     String?
+  streamUrl String
+
+  @@unique([userId, streamUrl])
+}
+
+model WatchHistory {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  logo        String?
+  streamUrl   String
+  lastWatched DateTime @default(now())
+
+  @@unique([userId, streamUrl])
+}
