@@ -13,7 +13,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ThemeToggle } from "@/components/app/theme-toggle";
 import { login, signup, type AuthState } from "@/app/actions/auth";
 
 export function AuthForm() {
@@ -41,9 +40,6 @@ export function AuthForm() {
           Your playlists. Your streams. In the browser.
         </CardTitle>
         <CardDescription className="sr-only">Sign in or create an account</CardDescription>
-        <div className="absolute right-4 top-4">
-          <ThemeToggle />
-        </div>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="login">

@@ -17,7 +17,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ThemeToggle } from "@/components/app/theme-toggle";
 import { Player } from "@/components/app/player";
 import { ChannelGrid } from "@/components/app/channel-grid";
 import { ChannelBrowser } from "@/components/app/channel-browser";
@@ -159,9 +158,6 @@ export function AppShell({
             ))}
           </nav>
 
-          <div className="ml-auto flex items-center gap-1">
-            <ThemeToggle />
-          </div>
         </div>
       </header>
 
