@@ -214,7 +214,6 @@ export function AppShell({
             {/* Official rights-holder guidance — premium events should be watched
                 through licensed sources, not restreams (PLAN §2). */}
             <div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/15 via-card to-card p-5 text-sm">
-              <Trophy className="pointer-events-none absolute -right-6 -top-6 h-32 w-32 text-primary/10" />
               <p className="text-base font-semibold">Watch the World Cup officially</p>
               <p className="mt-1 max-w-2xl text-muted-foreground">
                 The FIFA World Cup is licensed. For a reliable, legal stream use the
