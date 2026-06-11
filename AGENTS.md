@@ -22,8 +22,8 @@ Read this + `PLAN.md` (the source of truth) before each session.
 - Context7 MCP is optional; not configured in this checkout.
 
 ## Gotchas (PLAN §9)
-- **Prisma 7 is Rust-free** → needs a driver adapter. Local: `@prisma/adapter-better-sqlite3`.
-  Prod: `@prisma/adapter-pg` + `pg`.
+- **Prisma 7 is Rust-free** → needs a driver adapter. Uses `@prisma/adapter-pg` + `pg`
+  (Postgres everywhere — local + prod). See `DEPLOY.md`.
 - **Connection URL** lives in `prisma.config.ts` (`datasource.url`), NOT `schema.prisma`.
 - Generator kept as **`prisma-client-js`** (Turbopack-safe). Output: `@prisma/client`.
 - **PrismaClient singleton** in `lib/prisma.ts` (dev hot-reload).
@@ -43,7 +43,7 @@ Read this + `PLAN.md` (the source of truth) before each session.
 ## Local setup
 ```sh
 npm install
-npx prisma migrate dev      # creates prisma/dev.db
+npx prisma migrate deploy    # applies prisma/migrations to your Postgres
 npm run dev
 ```
-`.env` needs `DATABASE_URL` (sqlite) and `AUTH_SECRET`. See `.env.example`.
+`.env` needs `DATABASE_URL` (Postgres) and `AUTH_SECRET`. See `.env.example` / `DEPLOY.md`.

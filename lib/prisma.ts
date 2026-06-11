@@ -1,17 +1,15 @@
 import { PrismaClient } from "@prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-// Singleton so dev hot-reload doesn't exhaust connections (PLAN §9).
+// Singleton so dev hot-reload / serverless reuse doesn't exhaust connections.
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
 function createClient() {
-  // Same file the CLI migrates: prisma.config.ts resolves DATABASE_URL ("file:./dev.db")
-  // relative to the project root, so the db lives at ./dev.db.
-  const adapter = new PrismaBetterSqlite3({
-    url: process.env.DATABASE_URL ?? "file:./dev.db",
-  });
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) throw new Error("DATABASE_URL is not set");
+  const adapter = new PrismaPg({ connectionString });
   return new PrismaClient({ adapter });
 }
 
