@@ -13,6 +13,7 @@ import {
   RotateCw,
   Trophy,
   ExternalLink,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -167,7 +168,14 @@ export function AppShell({
       {/* Main */}
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 pb-28 pt-5 sm:px-6 md:pb-10">
         {nowPlaying && view === "home" && (
-          <div className="mb-6 overflow-hidden rounded-2xl shadow-2xl shadow-black/40 ring-1 ring-white/10 animate-rise">
+          <div className="relative mb-6 overflow-hidden rounded-2xl shadow-2xl shadow-black/40 ring-1 ring-white/10 animate-rise">
+            <button
+              onClick={() => setNowPlaying(null)}
+              aria-label="Close player"
+              className="absolute left-2 top-2 z-20 grid h-8 w-8 place-items-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/80"
+            >
+              <X className="h-4 w-4" />
+            </button>
             <Player
               src={nowPlaying.streamUrl}
               title={nowPlaying.name}
