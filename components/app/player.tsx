@@ -118,9 +118,22 @@ export function Player({
 
   const goFullscreen = useCallback(() => {
     const el = wrapRef.current;
-    if (!el) return;
-    if (document.fullscreenElement) document.exitFullscreen();
-    else el.requestFullscreen?.();
+    const video = videoRef.current as
+      | (HTMLVideoElement & { webkitEnterFullscreen?: () => void })
+      | null;
+
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+      return;
+    }
+    if (el?.requestFullscreen) {
+      el.requestFullscreen();
+    } else if (video?.webkitEnterFullscreen) {
+      // iOS Safari: Fullscreen API isn't supported on a <div>, only the <video>.
+      video.webkitEnterFullscreen();
+    } else if (video?.requestFullscreen) {
+      video.requestFullscreen();
+    }
   }, []);
 
   const togglePip = useCallback(async () => {
